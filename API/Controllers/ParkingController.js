@@ -75,11 +75,41 @@ class Parking
     {
 
         const req_body = req.body;
-        return res.status(200).send({
-            status: 200,
-            message: "Operation Completed",
-            data: req_body
-        }).end();
+        const is_reserved = req_body.user.disability ? req_body.user.disability : req_body.user.is_pregnent ? req_body.user.is_pregnent : false;
+
+        ParkingLotModel.find({ is_reserved: is_reserved, current_status: 'Available', status: true },
+            { status: false, created: false, __v: false, _id: false }).then(data =>
+            {
+                return res.status(200).send({
+                    status: 200,
+                    message: "Operation Completed",
+                    data: data
+                }).end();
+            }).catch(err =>
+            {
+                return res.status(400).send({
+                    status: 400,
+                    message: `Error: ${err} `,
+                }).end();
+            })
+    }
+
+    updateSlotById()
+    {
+
+    }
+
+    getSlotById(id = null)
+    {
+        if (id) {
+            return ParkingLotModel.findOne({ id: id }).then(data =>
+            {
+                return data;
+            }).catch(err =>
+            {
+                throw new Error(err);
+            })
+        }
     }
 }
 
