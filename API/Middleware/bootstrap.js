@@ -1,5 +1,8 @@
 const Logger = require('../../logger/loggerService');
 const config = process.env;
+const jwt = require('jsonwebtoken');
+const UserModel = require('../Models/UserModel').Users;
+
 /**
  * This method to handle and chunk the request data
  */
@@ -102,7 +105,7 @@ function sendErrorResponseBack(request, response, statusCode, errorResponse)
 
 function verifyToken(req, res, next)
 {
-    let token = req.header('auth-token') || req.header('x-access-token') || req.header('authorization');
+    var token = req.header('auth-token') || req.header('x-access-token') || req.header('authorization');
 
     if (token && token.startsWith('Bearer ')) {
         // Remove Bearer from string
@@ -116,6 +119,7 @@ function verifyToken(req, res, next)
     try {
         // const verified = jwt.verify(token,'superSecret');
         const decoded = jwt.decode(token, 'superSecret');
+        console.log(decoded);
         if (decoded.exp <= Date.now()) {
             sendErrorResponseBack(req, res, 400, "Access token has expired");
         } else {
@@ -126,8 +130,25 @@ function verifyToken(req, res, next)
     }
 }
 
+function AllowAccessTocken(request, response, next)
+{
+    const access_tocken = request.header.access_tocken;
+    UserModel.findOne({ access_tocken: access_tocken }, { created: false, password: false, __v: false, token: false, _id: false }).then(data =>
+    {
+        request.body.user = data;
+        next();
+    }).catch(err =>
+    {
+        return response.status(400).send({
+            status: "Error",
+            message: `Token is not valid, Please refresh your tocken or try login again!`,
+        }).end();
+    });
+}
+
 module.exports = {
     RequestDataHandler: RequestDataHandler,
     ValidateHTTPHeader: ValidateHTTPHeader,
-    VerifyCROSandCSRF: VerifyCROSandCSRF
+    VerifyCROSandCSRF: VerifyCROSandCSRF,
+    AllowAccessTocken: AllowAccessTocken
 }

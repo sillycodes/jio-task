@@ -20,6 +20,12 @@ class Users
         }
 
         const newToken = crypto.randomString(40);
+        const payload = {
+            emailId: req.body.emailId
+        };
+        const token = jwt.sign(payload, 'superSecret', {
+            expiresIn: Date.now() + 10 // expires in 1 minute
+        });
 
         const userData = UserModel({
             full_name: req_data.full_name,
@@ -29,15 +35,28 @@ class Users
             disability: req_data.disability,
             is_pregnent: req_data.is_pregnent,
             access_token: newToken,
+            token: token,
             email_id: req_data.email_id,
             password: password
         });
 
-        return res.status(200).send({
-            status: 200,
-            message: "Operation Completed",
-            data: userData
-        }).end();
+        await userData.save().then(data =>
+        {
+            return res.status(200).send({
+                status: 200,
+                message: "Operation Completed",
+                data: userData
+            }).end();
+
+        }).catch(err =>
+        {
+            return res.status(400).send({
+                status: "Error",
+                message: `Unable to add user, Err:${err}`,
+                data: userData
+            }).end();
+        });
+
     }
 
     generatePass(string)
