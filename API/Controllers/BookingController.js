@@ -51,6 +51,13 @@ class Booking extends Parking
         }
 
     }
+
+    async update(req, res){
+        return res.status(400).send({
+            status: "Error",
+            message: `Unable to book lot area, Err:${err}`,
+        }).end();
+    }
 }
 
 const $this = Booking.prototype;

@@ -146,9 +146,32 @@ function AllowAccessTocken(request, response, next)
     });
 }
 
+function isUserExist(request, response, next)
+{
+
+    const email = request.body.email_id;
+    UserModel.findOne({ email_id: email }, { created: false, password: false, __v: false, token: false, _id: false }).then(data =>
+    {
+        if (data.id) {
+            return response.status(400).send({
+                status: "Error",
+                message: `The requested user already exit, Try LoginIn!`,
+            }).end();
+        }
+        next();
+    }).catch(err =>
+    {
+        return response.status(400).send({
+            status: "Error",
+            message: `Token is not valid, Please refresh your tocken or try login again!`,
+        }).end();
+    });
+}
+
 module.exports = {
     RequestDataHandler: RequestDataHandler,
     ValidateHTTPHeader: ValidateHTTPHeader,
     VerifyCROSandCSRF: VerifyCROSandCSRF,
-    AllowAccessTocken: AllowAccessTocken
+    AllowAccessTocken: AllowAccessTocken,
+    IsUserExist: isUserExist
 }

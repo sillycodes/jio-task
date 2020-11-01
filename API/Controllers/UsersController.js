@@ -13,6 +13,7 @@ class Users
     async store(req, res)
     {
         const req_data = req.body;
+
         if (!req.body.password) {
             var password = await $this.generatePass(req.body.full_name);
         } else {
@@ -21,7 +22,7 @@ class Users
 
         const newToken = crypto.randomString(40);
         const payload = {
-            emailId: req.body.emailId
+            emailId: req.body.email_id
         };
         const token = jwt.sign(payload, 'superSecret', {
             expiresIn: Date.now() + 10 // expires in 1 minute
@@ -70,6 +71,7 @@ class Users
     {
         return bcrypt.hashSync(plainText, 10);
     }
+
 
 
 }
