@@ -94,8 +94,26 @@ class Parking
             })
     }
 
-    updateSlotById()
+    updateSlotById(id = null, status)
     {
+        if (id) {
+            return ParkingLotModel.findOneAndUpdate({ id: id },
+                {
+                    $set: {
+                        "current_status": status
+                    }
+               },{
+                   upsert: false,
+                   new: true
+               }
+            ).then(data =>
+            {
+                return data;
+            }).catch(err =>
+            {
+                throw new Error(err);
+            })
+        }
 
     }
 

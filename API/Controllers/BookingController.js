@@ -23,8 +23,10 @@ class Booking extends Parking
                     in_time: new Date().getTime(),
                     out_time: null,
                 });
-                booking_data.save().then(data =>
+                booking_data.save().then( async data =>
                 {
+                    const getSlotDetls = await $this.updateSlotById(req_body.slot_id, 'Booked');
+
                     return res.status(200).send({
                         status: 200,
                         message: "Operation Completed",
