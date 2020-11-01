@@ -23,14 +23,14 @@ class Booking extends Parking
                     in_time: new Date().getTime(),
                     out_time: null,
                 });
-                booking_data.save().then( async data =>
+                booking_data.save().then(async data =>
                 {
-                    const getSlotDetls = await $this.updateSlotById(req_body.slot_id, 'Booked');
+                    await $this.updateSlotById(req_body.slot_id, 'Booked');
 
                     return res.status(200).send({
                         status: 200,
-                        message: "Operation Completed",
-                        data: data
+                        message: "Slots Booked successfully !",
+                        data: `Booking Id: ${data}`
                     }).end();
 
                 }).catch(err =>
@@ -52,11 +52,38 @@ class Booking extends Parking
 
     }
 
-    async update(req, res){
-        return res.status(400).send({
-            status: "Error",
-            message: `Unable to book lot area, Err:${err}`,
-        }).end();
+    async update(req, res)
+    {
+        const slot_id = req.body.id;
+
+        BookingLog.findOneAndUpdate({ id: slot_id },
+            {
+                $set: {
+                    "out_time": new Date().getTime(),
+                }
+            }, {
+            upsert: false,
+            new: true
+        }
+        ).then(async data =>
+        {
+            const booked_lot = data.lot_id;
+            await $this.updateSlotById(booked_lot, 'Available');
+
+            return res.status(200).send({
+                status: "Success",
+                message: `Successfully logout!`,
+            }).end();
+        }).catch(err =>
+        {
+            return res.status(400).send({
+                status: "Error",
+                message: `Something went wrong, Try Again!`,
+                data: err
+            }).end();
+        })
+
+
     }
 }
 
