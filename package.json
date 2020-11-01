@@ -1,0 +1,29 @@
+{
+    "name": "Parking-Lot",
+    "version": "1.0.0",
+    "description": "This application publish a API for Parking Lot",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcrypt": "3.0.2",
+        "body-parser": "1.18.3",
+        "crypto-extra": "^0.4.0",
+        "dateformat": "^3.0.3",
+        "debug": "4.1.0",
+        "dotenv": "^8.2.0",
+        "express": "4.16.4",
+        "fs": "0.0.2",
+        "https": "1.0.0",
+        "jsonwebtoken": "8.4.0",
+        "log4js": "1.0.1",
+        "mongoose": "^5.10.11",
+        "nconf": "0.10.0",
+        "nodemon": "^1.18.9",
+        "redis": "2.8.0",
+        "trim": "0.0.1"
+    }
+}

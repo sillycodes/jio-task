@@ -1,0 +1,60 @@
+const UserModel = require('../Models/UserModel').Users;
+const bcrypt = require('bcrypt');
+const crypto = require('crypto-extra');
+var jwt = require('jsonwebtoken');
+
+
+class Users
+{
+    constructor()
+    {
+    }
+
+    async store(req, res)
+    {
+        const req_data = req.body;
+        if (!req.body.password) {
+            var password = await $this.generatePass(req.body.full_name);
+        } else {
+            var password = await $this.generatePass(req.body.password);
+        }
+
+        const newToken = crypto.randomString(40);
+
+        const userData = UserModel({
+            full_name: req_data.full_name,
+            mobile: req_data.mobile,
+            vehicle_number: req_data.vehicle_number,
+            gender: req_data.gender,
+            disability: req_data.disability,
+            is_pregnent: req_data.is_pregnent,
+            access_token: newToken,
+            email_id: req_data.email_id,
+            password: password
+        });
+
+        return res.status(200).send({
+            status: 200,
+            message: "Operation Completed",
+            data: userData
+        }).end();
+    }
+
+    generatePass(string)
+    {
+        var password = (string.replace(/\s/g, '')).substring(0, 4);
+        password = password.toLowerCase() + '@' + Math.floor(Math.random() * (99999 - 10000) + 10000);
+        return password;
+    }
+
+    generateHash(plainText)
+    {
+        return bcrypt.hashSync(plainText, 10);
+    }
+
+
+}
+
+const $this = Users.prototype;
+
+module.exports = Users;
